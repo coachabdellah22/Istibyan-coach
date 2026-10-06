@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>استبيان المدرب عبدالله لتأهيل المتدربين الجدد</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#eef2f6;--card:#fff;--tx:#14202e;--mu:#5d6b7b;--ac:#e8590c;--bd:#d7dee6;--hd:#0f2a43}
+@media(prefers-color-scheme:dark){:root{--bg:#0c141d;--card:#142230;--tx:#eaf0f6;--mu:#98a8b9;--bd:#27394b;--hd:#081827}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Cairo,Tahoma,Arial,sans-serif;line-height:1.8}
+header{background:var(--hd);color:#fff;padding:36px 20px 44px;text-align:center;border-bottom:6px solid var(--ac)}
+header h1{margin:0 0 8px;font-size:1.7rem;font-weight:800}
+header p{margin:0 auto;max-width:560px;color:#c5d3e0}
+main{max-width:680px;margin:-22px auto 40px;padding:0 14px}
+.q{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:18px;margin-bottom:12px}
+.q>label,.q>.t{display:block;font-weight:600;margin-bottom:8px}
+.q .r{color:var(--ac)}
+.o{display:flex;gap:8px;align-items:center;padding:4px 0;cursor:pointer}
+input[type=text],input[type=time],select,textarea{width:100%;font:inherit;color:var(--tx);background:transparent;border:1px solid var(--bd);border-radius:8px;padding:9px 12px}
+textarea{min-height:80px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac);border-color:var(--ac)}
+input[type=radio],input[type=checkbox]{accent-color:var(--ac);width:18px;height:18px}
+.sc{display:flex;justify-content:space-between;gap:4px;text-align:center}
+.sc label{flex:1;cursor:pointer}.sc span{display:block;font-size:.8rem;color:var(--mu)}
+.sc input{display:block;margin:2px auto}
+.ends{display:flex;justify-content:space-between;font-size:.85rem;color:var(--mu);margin-top:4px}
+.gr{overflow-x:auto}table{border-collapse:collapse;min-width:100%}
+th,td{padding:6px 8px;text-align:center;font-size:.85rem;border-bottom:1px solid var(--bd)}
+td:first-child,th:first-child{text-align:right;font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{width:100%;font:inherit;font-weight:800;font-size:1.1rem;background:var(--ac);color:#fff;border:0;border-radius:10px;padding:14px;cursor:pointer}
+button:disabled{opacity:.6}
+#msg{text-align:center;margin-top:12px;font-weight:600}
+.done{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:40px 20px;text-align:center}
+</style>
+</head>
+<body>
+<header>
+<h1>استبيان المدرب عبدالله لتأهيل المتدربين الجدد</h1>
+<p>ساعدنا في تصميم برنامجك التدريبي الخاص. هذا الاستبيان يجمع المعلومات الأساسية لإعداد خطة لياقة مناسبة لك.</p>
+</header>
+<main>
+<form id="f">
+<input type="hidden" name="_subject" value="إجابات استبيان جديدة - المدرب عبدالله">
+<input type="hidden" name="_template" value="table">
+<input type="hidden" name="_captcha" value="false">
+<div id="qs"></div>
+<button id="b" type="submit">إرسال</button>
+<div id="msg"></div>
+</form>
+<div id="ok" class="done" hidden><h2>شكراً لك! 🙌</h2><p>وصلتني إجاباتك وسأتواصل معك قريباً لإعداد برنامجك.</p><p>— المدرب عبدالله</p></div>
+</main>
+<script>
+const DAYS=["السبت","الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"];
+const PR=["أولوية عالية","أولوية متوسطة","أولوية منخفضة"];
+const Q=[
+{q:"الاسم الكامل",k:"t"},
+{q:"رقم الهاتف أو البريد الإلكتروني للتواصل",k:"t"},
+{q:"ما الهدف من استخدام برنامجنا التدريبي؟",k:"r",o:["خسارة الوزن / تقليل الدهون","بناء العضلات / التضخيم","تحسين التحمل واللياقة","الصحة والعافية العامة","أداء رياضي محدد"]},
+{q:"ما وزنك الحالي (بالكغ) وطولك (بالسم)؟",k:"t"},
+{q:"كيف تصف مستوى نشاطك البدني خارج التمارين المنظمة؟",k:"r",o:["خامل (حركة قليلة)","نشاط خفيف (مشي أو وقوف أحياناً)","نشاط متوسط (عمل نشيط ومشي كثير)","نشاط عالٍ (عمل شاق وحركة مستمرة)"]},
+{q:"كم يوماً في الأسبوع أنت ملتزم فعلاً بالتمرين مع المدرب عبدالله؟",k:"n",min:1,max:7,a:"الحد الأدنى (يوم)",b:"الحد الأقصى (7 أيام)"},
+{q:"ما أنواع الأنشطة البدنية التي تفضلها أو لديك خبرة بها؟ (اختر كل ما ينطبق)",k:"c",o:["تمارين القوة (أوزان / وزن الجسم)","الكارديو (جري، دراجة، سباحة)","التمارين المتقطعة عالية الكثافة (HIIT)","اليوغا / البيلاتس / المرونة","الرياضات الجماعية / الأنشطة الخارجية"]},
+{q:"هل تتوفر لديك معدات نادٍ متخصصة أم سيكون تدريبك بوزن الجسم أو في المنزل؟",k:"r",o:["نادٍ كامل (أجهزة وأوزان حرة ومعدات متخصصة)","معدات منزلية محدودة (دمبل، أحزمة مقاومة، سجادة)","وزن الجسم فقط (بدون معدات)"]},
+{q:"اذكر أي إصابات سابقة أو حالية أو حالات طبية أو قيود جسدية يجب أن نعرفها.",k:"a",opt:1},
+{q:"كم ساعة تنام في المتوسط كل ليلة؟",k:"s",o:["أقل من 5 ساعات","5 - 6 ساعات","6 - 7 ساعات","7 - 8 ساعات","أكثر من 8 ساعات"]},
+{q:"قيّم ثقتك في الحفاظ على جدول تمرين منتظم خلال الأشهر الثلاثة القادمة.",k:"n",min:1,max:5,a:"ثقة ضعيفة",b:"ثقة كبيرة"},
+{q:"ما أولوية كل محور من محاور المتابعة الأسبوعية التي تريدها من المدرب؟",k:"g",rows:["متابعة التغذية ونصائح الوجبات","تصحيح الأداء والتقنية","التحفيز ومتابعة الالتزام","عرض التقدم وتحليل البيانات"],cols:PR},
+{q:"في أي أيام الأسبوع تفضل أداء تمارينك الأساسية؟",k:"c",o:DAYS,opt:1},
+{q:"من 1 إلى 5، ما أهمية الإرشاد الغذائي الشخصي (خطة وجبات / حساب الماكروز) في خطتك؟",k:"n",min:1,max:5,a:"غير مهم",b:"ضروري جداً"},
+{q:"ما الوقت المفضل لديك من اليوم لتمرينك الأساسي؟",k:"r",o:["الفجر والصباح الباكر (قبل 9 صباحاً)","نهاية الصباح (9 - 12)","بعد الظهر (12 - 4)","المساء (بعد 4)"]},
+{q:"هل تتبع نظاماً غذائياً معيناً أو قيوداً غذائية؟",k:"s",o:["نظام عادي (يأكل كل شيء)","نباتي (يأكل البيض والألبان)","نباتي صرف (فيغان)","كيتو","باليو","خالٍ من الغلوتين","خالٍ من الألبان","أخرى"]},
+{q:"ما أكبر دافع لديك للحفاظ على روتين اللياقة؟",k:"r",o:["تحسين الصحة وطول العمر","تغيير الشكل وتركيب الجسم","تخفيف التوتر والصحة النفسية","زيادة الطاقة","التفاعل الاجتماعي / الحصص الجماعية"]},
+{q:"ما متوسط كمية الماء التي تشربها يومياً (باللتر)؟",k:"t"},
+{q:"ما هدفك من شرب الماء في الأشهر القادمة؟",k:"r",o:["الحفاظ على الكمية الحالية","زيادة طفيفة","زيادة كبيرة","لا أتابعها"]},
+{q:"ما أهمية العوامل التالية في اختيار مكان التمرين؟",k:"g",rows:["القرب من البيت أو العمل","توفر معدات محددة","التكلفة / رسوم الاشتراك","الأجواء ومستوى الازدحام"],cols:["غير مهم","قليل الأهمية","مهم","مهم جداً"]},
+{q:"ما أكثر التذكيرات التي ستساعدك على الالتزام؟",k:"c",o:["تذكير يومي بالتمرين","تذكير بتسجيل الوجبات","ملخص ونتائج نهاية اليوم","رسائل واقتباسات تحفيزية","تذكير بشرب الماء"],opt:1},
+{q:"ما طرق الاستشفاء التي تعتمدها في روتينك؟",k:"c",o:["استشفاء نشط (نشاط خفيف / تمدد)","تدليك عميق / الفوم رولر","علاج بالبرودة أو الحرارة (حمام جليدي، ساونا)","مكملات محددة (بروتين، BCAA)","أيام راحة مخصصة"],opt:1},
+{q:"هل تتابع وجباتك أو مدخولك الغذائي حالياً؟",k:"r",o:["نعم، بانتظام","نعم، لكن بشكل غير منتظم","لا، لكنني أنوي البدء","لا، ولا أنوي ذلك"]},
+{q:"ما الوقت الذي تفضل أن تبدأ فيه تمرينك الأساسي بالضبط؟",k:"tm"},
+{q:"ما المقاييس التي تعتمد عليها أو تنوي الاعتماد عليها لقياس تقدمك؟ (اختر كل ما ينطبق)",k:"c",o:["وزن الجسم (الميزان)","قياسات الجسم (شريط القياس)","نسبة الدهون","زيادة القوة (رفع أوزان أثقل)","تحسن التحمل (جري أطول / أسرع)","الشكل الخارجي (صور / مرآة)"]},
+{q:"كيف تقيّم جاهزيتك النفسية والذهنية لهذه الرحلة؟",k:"g",rows:["مستوى الحافز","إدارة التوتر","الانضباط والاستمرارية","الصبر على النتائج"],cols:["تحتاج تحسيناً كبيراً","متوسط","جيد","ممتاز"]},
+{q:"هل لديك موعد أو إطار زمني محدد لتحقيق هدفك الرئيسي؟",k:"t",opt:1},
+{q:"ما الأيام التي تكون فيها أكثر مرونة وتفرغاً لأنشطة خفيفة عفوية (مشي أو تمدد)؟",k:"c",o:DAYS,opt:1},
+{q:"من 1 إلى 5، كم مرة تتفقد بيانات ساعتك الذكية أو جهاز تتبع اللياقة يومياً؟",k:"n",min:1,max:5,a:"نادراً",b:"كثيراً جداً"},
+{q:"ما وسيلة التواصل المفضلة لاستلام التحديثات والنصائح الطويلة؟",k:"s",o:["البريد الإلكتروني","واتساب / رسائل التطبيقات","رسالة نصية (SMS)","لا أريد تحديثات"]},
+{q:"ما المكملات الغذائية التي تتناولها بانتظام؟",k:"c",o:["بودرة بروتين","كرياتين","فيتامينات متعددة","زيت السمك / أوميغا 3","محفز ما قبل التمرين","لا شيء"],opt:1},
+{q:"إذا كنت تتابع تغذيتك، فما طريقتك المفضلة لحساب السعرات والماكروز؟",k:"r",o:["تطبيق مخصص (مثل MyFitnessPal)","تسجيل يدوي / مفكرة","أكل حدسي / ضبط الحصص","لا أتابع"]},
+{q:"ما مدى صعوبة الحفاظ على عادات أكل صحية بالنسبة لك؟",k:"n",min:1,max:5,a:"سهل جداً",b:"صعب جداً"},
+{q:"حدد وقت استيقاظك ووقت نومك في يوم عادي من أيام الأسبوع.",k:"tm2"},
+{q:"قيّم مستوى التوتر في حياتك اليومية من 1 إلى 10.",k:"n",min:1,max:10,a:"هادئ",b:"متوتر جداً"},
+{q:"ما أكبر عقبة تتوقع أن تواجهها في تحقيق هدفك الرئيسي؟",k:"a"},
+{q:"في أي بيئة تخطط لاستخدام برنامج المدرب عبدالله؟",k:"r",o:["المنزل / مكان خاص","نادٍ رياضي","أماكن مفتوحة (حديقة، مضمار...)"]},
+{q:"قيّم مستوى خبرتك في أنواع التدريب التالية:",k:"g",rows:["الأوزان الحرة (دمبل / بار)","أجهزة المقاومة","تمارين وزن الجسم","كارديو التحمل"],cols:["لا خبرة","مبتدئ","متوسط","متقدم"]},
+{q:"هل هناك تمارين أو حركات تريد تجنبها بسبب ألم أو خطر؟",k:"a",opt:1}
+];
+const R='<span class="r"> *</span>';
+let h='';
+Q.forEach((x,i)=>{
+const n=(i+1)+". "+x.q, req=x.opt?'':'required', st=x.opt?'':R;
+let body='';
+if(x.k=="t")body=`<input type="text" name="${n}" ${req}>`;
+else if(x.k=="a")body=`<textarea name="${n}" ${req}></textarea>`;
+else if(x.k=="s")body=`<select name="${n}" ${req}><option value="">اختر</option>${x.o.map(o=>`<option>${o}</option>`).join('')}</select>`;
+else if(x.k=="r"||x.k=="c"){const t=x.k=="r"?"radio":"checkbox";body=x.o.map((o,j)=>`<label class="o"><input type="${t}" name="${n}" value="${o}" ${t=="radio"&&j==0?req:''}>${o}</label>`).join('')}
+else if(x.k=="n"){let s='';for(let v=x.min;v<=x.max;v++)s+=`<label><span>${v}</span><input type="radio" name="${n}" value="${v}" ${v==x.min?req:''}></label>`;body=`<div class="sc">${s}</div><div class="ends"><span>${x.a}</span><span>${x.b}</span></div>`}
+else if(x.k=="g"){body=`<div class="gr"><table><tr><th></th>${x.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${x.rows.map(r=>`<tr><td>${r}</td>${x.cols.map((c,j)=>`<td><input type="radio" name="${n} ← ${r}" value="${c}" ${j==0?'required':''}></td>`).join('')}</tr>`).join('')}</table></div>`}
+else if(x.k=="tm")body=`<input type="time" name="${n}" required>`;
+else if(x.k=="tm2")body=`<div class="two"><div>وقت الاستيقاظ<input type="time" name="${n} ← الاستيقاظ" required></div><div>وقت النوم<input type="time" name="${n} ← النوم" required></div></div>`;
+h+=`<div class="q"><div class="t">${x.q}${st}</div>${body}</div>`;
+});
+document.getElementById('qs').innerHTML=h;
+const f=document.getElementById('f'),b=document.getElementById('b'),m=document.getElementById('msg');
+f.addEventListener('submit',async e=>{
+e.preventDefault();b.disabled=true;b.textContent='جارٍ الإرسال...';m.textContent='';
+try{
+const r=await fetch('https://formsubmit.co/ajax/coachabdellah22@gmail.com',{method:'POST',headers:{Accept:'application/json'},body:new FormData(f)});
+const j=await r.json();
+if(j.success===true||j.success==="true"){f.hidden=true;document.getElementById('ok').hidden=false;window.scrollTo(0,0)}
+else throw 0;
+}catch(_){m.textContent='تعذّر الإرسال. تحقق من اتصالك وحاول مرة أخرى.';b.disabled=false;b.textContent='إرسال'}
+});
+</script>
+</body>
+</html>
